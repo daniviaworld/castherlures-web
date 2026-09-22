@@ -75,6 +75,11 @@ function renderContacto(c) {
     label: "@" + c.contactoInstagram.replace("@", ""),
     icon: `<rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/>`
   });
+  if (c.contactoTiktok) items.push({
+    href: `https://tiktok.com/@${c.contactoTiktok.replace("@", "")}`,
+    label: "@" + c.contactoTiktok.replace("@", ""),
+    icon: `<path d="M9 12a4 4 0 1 0 4 4V2a5 5 0 0 0 5 5"/>`
+  });
 
   if (items.length === 0) { box.style.display = "none"; return; }
   box.style.display = "flex";
