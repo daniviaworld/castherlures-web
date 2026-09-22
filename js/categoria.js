@@ -1,10 +1,16 @@
 import { firebaseConfig } from "./firebase-config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getFirestore, collection, query, where, orderBy, getDocs }
+import { getFirestore, collection, doc, getDoc, query, where, orderBy, getDocs }
   from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+getDoc(doc(db, "sitio", "home")).then(snap => {
+  if (snap.exists() && snap.data().footerIzquierda) {
+    document.getElementById("footer-izq").textContent = snap.data().footerIzquierda;
+  }
+}).catch(() => {});
 
 const params = new URLSearchParams(location.search);
 const slug = params.get("cat");

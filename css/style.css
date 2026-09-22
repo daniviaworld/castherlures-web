@@ -68,15 +68,18 @@ header {
 }
 
 .nav .brand-link img {
-  height: 44px;
-  width: 44px;
+  height: 68px;
+  width: 68px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(31,169,232,0.4);
+  box-shadow: 0 0 0 4px rgba(31,169,232,0.08), 0 0 18px rgba(31,169,232,0.25);
 }
 
+.nav { padding: 10px 0; }
+
 .nav .brand-text {
-  font-size: 1.15rem;
+  font-size: 1.3rem;
   line-height: 1.1;
 }
 
