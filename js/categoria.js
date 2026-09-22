@@ -1,6 +1,6 @@
 import { firebaseConfig } from "./firebase-config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getFirestore, collection, doc, getDoc, query, where, orderBy, getDocs }
+import { getFirestore, collection, doc, getDoc, query, where, getDocs }
   from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 const app = initializeApp(firebaseConfig);
@@ -67,8 +67,7 @@ async function loadCategoria() {
     const prodQ = query(
       collection(db, "productos"),
       where("categoriaId", "==", catDoc.id),
-      where("activo", "==", true),
-      orderBy("orden", "asc")
+      where("activo", "==", true)
     );
     const prodSnap = await getDocs(prodQ);
 
@@ -80,9 +79,13 @@ async function loadCategoria() {
       return;
     }
 
-    countEl.textContent = `${prodSnap.size} artículo${prodSnap.size === 1 ? "" : "s"}`;
+    const productos = [];
+    prodSnap.forEach(doc => productos.push(doc.data()));
+    productos.sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
+
+    countEl.textContent = `${productos.length} artículo${productos.length === 1 ? "" : "s"}`;
     let html = "";
-    prodSnap.forEach(doc => { html += prodCardHTML(doc.data()); });
+    productos.forEach(p => { html += prodCardHTML(p); });
     grid.innerHTML = html;
 
   } catch (err) {

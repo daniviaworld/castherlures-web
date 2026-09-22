@@ -1,6 +1,6 @@
 import { firebaseConfig } from "./firebase-config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getFirestore, collection, doc, getDoc, query, where, orderBy, getDocs }
+import { getFirestore, collection, doc, getDoc, query, where, getDocs }
   from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 const app = initializeApp(firebaseConfig);
@@ -90,11 +90,7 @@ function catCardHTML(cat, index) {
 
 async function loadCategorias() {
   try {
-    const q = query(
-      collection(db, "categorias"),
-      where("activo", "==", true),
-      orderBy("orden", "asc")
-    );
+    const q = query(collection(db, "categorias"), where("activo", "==", true));
     const snap = await getDocs(q);
 
     if (snap.empty) {
@@ -104,12 +100,12 @@ async function loadCategorias() {
       return;
     }
 
+    const cats = [];
+    snap.forEach(doc => cats.push(doc.data()));
+    cats.sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
+
     let html = "";
-    let i = 0;
-    snap.forEach(doc => {
-      html += catCardHTML(doc.data(), i);
-      i++;
-    });
+    cats.forEach((cat, i) => { html += catCardHTML(cat, i); });
     grid.innerHTML = html;
   } catch (err) {
     console.error(err);
