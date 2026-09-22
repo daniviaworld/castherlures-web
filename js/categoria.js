@@ -27,8 +27,8 @@ function money(n) {
   return num.toLocaleString("es-ES", { style: "currency", currency: "EUR" });
 }
 
-function prodCardHTML(p) {
-  const img = p.imagen || "assets/logo.jpg";
+function prodCardHTML(p, index) {
+  const img = (p.imagenes && p.imagenes[0]) || p.imagen || "assets/logo.jpg";
   const specs = [];
   if (p.gramos != null) specs.push(`${p.gramos} g`);
   if (p.caida) specs.push(`Caída ${p.caida}`);
@@ -36,7 +36,7 @@ function prodCardHTML(p) {
   if (p.sonajero) specs.push("Sonajero");
 
   return `
-    <article class="prod-card">
+    <article class="prod-card" data-index="${index}">
       <div class="prod-thumb"><img src="${img}" alt="${p.nombre}" loading="lazy"></div>
       <div class="prod-body">
         ${p.tipo ? `<span class="prod-tipo">${p.tipo}</span>` : ""}
@@ -95,8 +95,13 @@ async function loadCategoria() {
 
     countEl.textContent = `${productos.length} artículo${productos.length === 1 ? "" : "s"}`;
     let html = "";
-    productos.forEach(p => { html += prodCardHTML(p); });
+    productos.forEach((p, i) => { html += prodCardHTML(p, i); });
     grid.innerHTML = html;
+
+    productosActuales = productos;
+    grid.querySelectorAll(".prod-card").forEach(card => {
+      card.addEventListener("click", () => abrirLightbox(Number(card.dataset.index)));
+    });
 
   } catch (err) {
     console.error(err);
@@ -108,3 +113,78 @@ async function loadCategoria() {
 }
 
 loadCategoria();
+
+// ==================================================
+// FICHA AMPLIADA DE ARTÍCULO (lightbox)
+// ==================================================
+let productosActuales = [];
+let lightboxFotos = [];
+let lightboxIndiceFoto = 0;
+
+const lightbox = document.getElementById("lightbox");
+
+function abrirLightbox(indexProducto) {
+  const p = productosActuales[indexProducto];
+  if (!p) return;
+
+  lightboxFotos = (p.imagenes && p.imagenes.length) ? p.imagenes : [p.imagen || "assets/logo.jpg"];
+  lightboxIndiceFoto = 0;
+
+  document.getElementById("lightbox-tipo").textContent = p.tipo || "";
+  document.getElementById("lightbox-tipo").style.display = p.tipo ? "" : "none";
+  document.getElementById("lightbox-nombre").textContent = p.nombre;
+  document.getElementById("lightbox-desc").textContent = p.descripcion || "";
+  document.getElementById("lightbox-desc").style.display = p.descripcion ? "" : "none";
+  document.getElementById("lightbox-price").textContent = money(p.precio);
+
+  const specs = [];
+  if (p.gramos != null) specs.push(`${p.gramos} g`);
+  if (p.caida) specs.push(`Caída ${p.caida}`);
+  if (p.glow) specs.push("Glow");
+  if (p.sonajero) specs.push("Sonajero");
+  document.getElementById("lightbox-specs").innerHTML = specs.map(s => `<span class="spec-chip">${s}</span>`).join("");
+
+  pintarFotoLightbox();
+  lightbox.style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
+
+function pintarFotoLightbox() {
+  document.getElementById("lightbox-img").src = lightboxFotos[lightboxIndiceFoto];
+
+  const prevBtn = document.getElementById("lightbox-prev");
+  const nextBtn = document.getElementById("lightbox-next");
+  const multiple = lightboxFotos.length > 1;
+  prevBtn.hidden = !multiple;
+  nextBtn.hidden = !multiple;
+
+  const dots = document.getElementById("lightbox-dots");
+  dots.innerHTML = multiple
+    ? lightboxFotos.map((_, i) => `<span class="${i === lightboxIndiceFoto ? "active" : ""}" data-i="${i}"></span>`).join("")
+    : "";
+  dots.querySelectorAll("span").forEach(dot => {
+    dot.addEventListener("click", () => { lightboxIndiceFoto = Number(dot.dataset.i); pintarFotoLightbox(); });
+  });
+}
+
+function cerrarLightbox() {
+  lightbox.style.display = "none";
+  document.body.style.overflow = "";
+}
+
+document.getElementById("lightbox-close").addEventListener("click", cerrarLightbox);
+document.getElementById("lightbox-prev").addEventListener("click", () => {
+  lightboxIndiceFoto = (lightboxIndiceFoto - 1 + lightboxFotos.length) % lightboxFotos.length;
+  pintarFotoLightbox();
+});
+document.getElementById("lightbox-next").addEventListener("click", () => {
+  lightboxIndiceFoto = (lightboxIndiceFoto + 1) % lightboxFotos.length;
+  pintarFotoLightbox();
+});
+lightbox.addEventListener("click", (e) => { if (e.target === lightbox) cerrarLightbox(); });
+document.addEventListener("keydown", (e) => {
+  if (lightbox.style.display !== "flex") return;
+  if (e.key === "Escape") cerrarLightbox();
+  if (e.key === "ArrowLeft") document.getElementById("lightbox-prev").click();
+  if (e.key === "ArrowRight") document.getElementById("lightbox-next").click();
+});
