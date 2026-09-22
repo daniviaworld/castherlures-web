@@ -1,12 +1,24 @@
 import { firebaseConfig } from "./firebase-config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getFirestore, collection, doc, getDoc, query, where, getDocs }
+import { getFirestore, collection, doc, getDoc, setDoc, increment, query, where, getDocs }
   from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const grid = document.getElementById("cat-grid");
+
+// ---------- Registro de visitas (para las estadísticas del panel) ----------
+async function registrarVisita() {
+  try {
+    const hoy = new Date().toISOString().slice(0, 10);
+    await setDoc(doc(db, "estadisticas", "resumen"), { visitasTotal: increment(1) }, { merge: true });
+    await setDoc(doc(db, "estadisticas_dias", hoy), { visitas: increment(1) }, { merge: true });
+  } catch (err) {
+    console.error("No se pudo registrar la visita:", err);
+  }
+}
+registrarVisita();
 
 // ---------- Textos editables (desde el panel de control) ----------
 async function loadContenido() {
