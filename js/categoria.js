@@ -1,6 +1,6 @@
 import { firebaseConfig } from "./firebase-config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getFirestore, collection, doc, getDoc, query, where, getDocs }
+import { getFirestore, collection, doc, getDoc, setDoc, increment, query, where, getDocs }
   from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 const app = initializeApp(firebaseConfig);
@@ -63,6 +63,9 @@ async function loadCategoria() {
     titleEl.textContent = cat.nombre;
     crumbEl.textContent = cat.nombre;
     pageTitleEl.textContent = `Castherlures — ${cat.nombre}`;
+
+    // Registrar visita a esta categoría (para "Categorías más vistas" en el panel)
+    setDoc(doc(db, "categoria_vistas", catDoc.id), { vistas: increment(1) }, { merge: true }).catch(() => {});
 
     const prodQ = query(
       collection(db, "productos"),
