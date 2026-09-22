@@ -29,6 +29,12 @@ function money(n) {
 
 function prodCardHTML(p) {
   const img = p.imagen || "assets/logo.jpg";
+  const specs = [];
+  if (p.gramos != null) specs.push(`${p.gramos} g`);
+  if (p.caida) specs.push(`Caída ${p.caida}`);
+  if (p.glow) specs.push("Glow");
+  if (p.sonajero) specs.push("Sonajero");
+
   return `
     <article class="prod-card">
       <div class="prod-thumb"><img src="${img}" alt="${p.nombre}" loading="lazy"></div>
@@ -36,6 +42,7 @@ function prodCardHTML(p) {
         ${p.tipo ? `<span class="prod-tipo">${p.tipo}</span>` : ""}
         <span class="prod-name">${p.nombre}</span>
         ${p.descripcion ? `<span class="prod-desc">${p.descripcion}</span>` : ""}
+        ${specs.length ? `<div class="prod-specs">${specs.map(s => `<span class="spec-chip">${s}</span>`).join("")}</div>` : ""}
         <span class="prod-price">${money(p.precio)}</span>
       </div>
     </article>`;
