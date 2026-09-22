@@ -431,6 +431,24 @@ header {
   font-size: 1.15rem;
 }
 
+.prod-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.spec-chip {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  color: var(--silver);
+  background: var(--panel-2);
+  white-space: nowrap;
+}
+
 /* ---------- Category page header ---------- */
 .cat-hero {
   padding: 40px 0 30px;
