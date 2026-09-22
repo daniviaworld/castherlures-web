@@ -80,7 +80,8 @@ function catCardHTML(cat, index) {
   const img = cat.imagen || "assets/logo.jpg";
   return `
     <a class="cat-card${big}" href="categoria.html?cat=${encodeURIComponent(cat.slug)}">
-      <img src="${img}" alt="${cat.nombre}" loading="lazy">
+      <div class="card-bg" style="background-image:url('${img}')"></div>
+      <img class="card-fg" src="${img}" alt="${cat.nombre}" loading="lazy">
       <div class="cat-label">
         <h3>${cat.nombre}</h3>
         <span class="arrow">→</span>

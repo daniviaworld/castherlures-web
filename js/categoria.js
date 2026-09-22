@@ -31,7 +31,10 @@ function prodCardHTML(p) {
   const img = p.imagen || "assets/logo.jpg";
   return `
     <article class="prod-card">
-      <div class="prod-thumb"><img src="${img}" alt="${p.nombre}" loading="lazy"></div>
+      <div class="prod-thumb">
+        <div class="card-bg" style="background-image:url('${img}')"></div>
+        <img class="card-fg" src="${img}" alt="${p.nombre}" loading="lazy">
+      </div>
       <div class="prod-body">
         ${p.tipo ? `<span class="prod-tipo">${p.tipo}</span>` : ""}
         <span class="prod-name">${p.nombre}</span>
